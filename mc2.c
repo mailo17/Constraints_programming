@@ -8,7 +8,7 @@
 // 0 = no constraint
 // 1 = Xi != Xj
 // 2 = Xi / 3 != Xj / 3
-// 3 = abs(Xi / 3 - Xj / 3) > 6
+// 3 = abs(Xi / 3 - Xj / 3) > 2
 // 4 = (Xi / 3 == Xj / 3 && Xi % 3 < Xj % 3)
 // Do not care about what gets printed at output(just debugging)...check only .txt
 // min-conflicts with random walk and random restarts
@@ -78,7 +78,7 @@ int main()
 
         // Measure execution time
         clock_t start = clock();
-        double p = 0.2; // 10% probability for random walk
+        double p = 0.3; // e.g p = 0.2 = 20% probability for random walk
         minConflicts(maxTries, maxChanges, Xvalue, numberofvariables, numberofvalues, outputFile, &moves, &bestCollisions, p);
         clock_t end = clock();
 
@@ -292,14 +292,14 @@ void minConflicts(int maxTries, int maxChanges, int *Xvalue, int numberofvariabl
             {
                 // (x,a) := randomly chosen alternative assignment of x
                 newAssignment = rand() % numberofvalues;
-                fprintf(outputFile, "(x,a) := randomly chosen alternative assignment of x\n"); // debugging...will be removed
+                // fprintf(outputFile, "(x,a) := randomly chosen alternative assignment of x\n"); // debugging...will be removed
                 fprintf(outputFile, "X%d new random value is: %d\n", x + 1, newAssignment);
             }
             else
             {
                 // (x,a) := the alternative assignment of x which satisfies the maximum number of constraints under the current assignment A
                 newAssignment = AlternativeAssignment(Xvalue, numberofvariables, x, numberofvalues);
-                fprintf(outputFile, "(x,a) := the alternative assignment of x which satisfies the maximum number of constraints under the current assignment A\n"); // debugging...will be removed
+                // fprintf(outputFile, "(x,a) := the alternative assignment of x which satisfies the maximum number of constraints under the current assignment A\n"); // debugging...will be removed
                 fprintf(outputFile, "X%d better value is: %d\n", x + 1, newAssignment);
             }
 
