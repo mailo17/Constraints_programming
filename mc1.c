@@ -1,8 +1,8 @@
 // compile with: gcc -o output mc1.c  
 // run with: ./output
 // Results will be saved in results.txt
-// test.csv is a testing csv to see if everything works ok... i mean 5x5
-// constraints.csv is the one that will be used in the algorithm and it is 72x72 as our courses...
+// test.csv is a testing csv to see if everything works ok... i mean 73x73
+// constraints.csv is the one that will be used in the algorithm and it is 73x73 as our courses...
 // We must implement it as Stergiou said
 // constraints types are (0,1,2,3,4)
 // 0 = no constraint
@@ -21,7 +21,7 @@
 #include <string.h>
 
 // Functions signature
-void readConstraintsMatrix(const char *filename, int constraints[5][5]);
+void readConstraintsMatrix(const char *filename, int constraints[73][73]);
 int satisfies(int *Xvalue, int numberofvariables, int numberofvalues);
 int RandomVariableConflict(int *Xvalue, int numberofvariables, int numberofvalues);
 int AlternativeAssignment(int *Xvalue, int numberofvariables, int variable, int numberofvalues);
@@ -29,13 +29,13 @@ void minConflicts(int maxTries, int maxChanges, int *Xvalue, int numberofvariabl
 
 int main()
 {
-    int maxTries = 1;
-    int maxChanges = 1;
-    int numberofvariables = 5;
-    int days = 10;
+    int maxTries = 20;
+    int maxChanges = 100;
+    int numberofvariables = 73;
+    int days = 20;
     int Xvalue[numberofvariables]; // X1, X2, ..., X70...values...Practically X1, X2, ..., X70
     int numberofvalues = days * 3; // Timeslots = days * 3
-    int PrecedureRestarts = 2; // The whole procedure restarts
+    int PrecedureRestarts = 1; // The whole procedure restarts
 
     FILE *outputFile = fopen("results.txt", "w"); // Open file to save results
     if (outputFile == NULL)
@@ -117,11 +117,9 @@ int main()
 }
 
 // Read from CSV file
-void readConstraintsMatrix(const char *filename, int constraints[5][5])
-{
+void readConstraintsMatrix(const char *filename, int constraints[73][73]) {
     FILE *file = fopen(filename, "r");
-    if (file == NULL)
-    {
+    if (file == NULL) {
         printf("ERROR OPENING CSV FILE.\n");
         exit(1);
     }
@@ -129,14 +127,17 @@ void readConstraintsMatrix(const char *filename, int constraints[5][5])
     char buffer[2048];
     int row = 0;
 
-    while (fgets(buffer, sizeof(buffer), file))
-    {
+    while (fgets(buffer, sizeof(buffer), file)) {
         char *token = strtok(buffer, ",");
         int col = 0;
 
-        while (token != NULL)
-        {
-            constraints[row][col] = atoi(token);
+        while (token != NULL) {
+            // Handle empty cells by assigning 0
+            if (strcmp(token, "") == 0 || strcmp(token, "\n") == 0) {
+                constraints[row][col] = 0;
+            } else {
+                constraints[row][col] = atoi(token);
+            }
             token = strtok(NULL, ",");
             col++;
         }
@@ -150,44 +151,45 @@ void readConstraintsMatrix(const char *filename, int constraints[5][5])
 int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
 {
     int conflicts = 0;
-    int constraints[5][5] = {0}; // Adjust size to 5x5
+    int constraints[73][73] = {0}; // Adjust size to 73x73
 
     // Read the matrix from the CSV 
-    readConstraintsMatrix("test.csv", constraints);
+    readConstraintsMatrix("constraints.csv", constraints);
 
     // Check constraints...The four types of constraints we have 
     for (int i = 0; i < numberofvariables; i++)
     {
-        for (int j = 0; j < numberofvariables; j++)
+        for (int j = i+1; j < numberofvariables; j++)
         {
 
             int constraint = constraints[i][j];
+            //printf("Checking constraint between X%d and X%d: %d\n", i, j, constraint);
 
             if (constraint == 1)
             {
                 // Xi != Xj
                 if (Xvalue[i] == Xvalue[j])
                 {
-                    printf("Conflict: X%d == X%d\n", i, j);
-                    conflicts++;
-                }
-            }
-            else if (constraint == 2)
-            {
-                // Xi / 3 != Xj / 3
-                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
-                {
-                    printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
+                    //printf("Conflict: X%d == X%d\n", i, j);
                     conflicts++;
                 }
             }
             else if (constraint == 3)
             {
+                // Xi / 3 != Xj / 3
+                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
+                {
+                    //printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
+                    conflicts++;
+                }
+            }
+            else if (constraint == 2)
+            {
                 // abs(Xi / 3 - Xj / 3) > 2
                 int diff = abs((Xvalue[i] / 3) - (Xvalue[j] / 3));
                 if (diff < 2)
                 {
-                    printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
+                    //printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
                     conflicts++;
                 }
             }
@@ -196,7 +198,7 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
                 // (Xi / 3 == Xj / 3 && Xi % 3 < Xj % 3)
                 if ((Xvalue[i] / 3 == Xvalue[j] / 3) && (Xvalue[i] % 3 >= Xvalue[j] % 3))
                 {
-                    printf("Conflict: X%d / 3 == X%d / 3 && X%d %% 3 >= X%d %% 3\n", i, j, i, j);
+                    //printf("Conflict: X%d / 3 == X%d / 3 && X%d %% 3 >= X%d %% 3\n", i, j, i, j);
                     conflicts++;
                 }
             }
