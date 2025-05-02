@@ -30,7 +30,7 @@ void minConflicts(int maxTries, int maxChanges, int *Xvalue, int numberofvariabl
 int main()
 {
     int maxTries = 1;
-    int maxChanges = 10;
+    int maxChanges = 1;
     int numberofvariables = 5;
     int days = 10;
     int Xvalue[numberofvariables]; // X1, X2, ..., X70...values...Practically X1, X2, ..., X70
@@ -183,9 +183,9 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
             }
             else if (constraint == 3)
             {
-                // abs(Xi / 3 - Xj / 3) > 6
+                // abs(Xi / 3 - Xj / 3) > 2
                 int diff = abs((Xvalue[i] / 3) - (Xvalue[j] / 3));
-                if (diff <= 6)
+                if (diff < 2)
                 {
                     printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
                     conflicts++;

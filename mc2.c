@@ -185,9 +185,9 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
             }
             else if (constraint == 3)
             {
-                // abs(Xi / 3 - Xj / 3) > 6
+                // abs(Xi / 3 - Xj / 3) > 2
                 int diff = abs((Xvalue[i] / 3) - (Xvalue[j] / 3));
-                if (diff <= 6)
+                if (diff < 2)
                 {
                     printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
                     conflicts++;
