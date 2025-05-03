@@ -1,0 +1,50 @@
+function TabuSearchWithRandomRestarts(problem, max_iterations, max_no_improve, tabu_tenure, restart_limit):
+    best_global_solution ← null
+    best_global_cost ← ∞
+    restarts ← 0
+
+    while restarts < restart_limit:
+        current_solution ← generate_random_solution(problem)
+        current_cost ← evaluate(current_solution)
+        best_local_solution ← current_solution
+        best_local_cost ← current_cost
+        tabu_list ← empty list
+        no_improve_counter ← 0
+        iterations ← 0
+
+        while iterations < max_iterations and no_improve_counter < max_no_improve:
+            neighborhood ← generate_neighbors(current_solution)
+            best_candidate ← null
+            best_candidate_cost ← ∞
+
+            for neighbor in neighborhood:
+                move ← get_move(current_solution, neighbor)
+                if move not in tabu_list or satisfies_aspiration_criteria(neighbor, best_local_cost):
+                    cost ← evaluate(neighbor)
+                    if cost < best_candidate_cost:
+                        best_candidate ← neighbor
+                        best_candidate_cost ← cost
+                        best_move ← move
+
+            current_solution ← best_candidate
+            current_cost ← best_candidate_cost
+            tabu_list.append(best_move)
+            if length(tabu_list) > tabu_tenure:
+                remove_oldest(tabu_list)
+
+            if current_cost < best_local_cost:
+                best_local_solution ← current_solution
+                best_local_cost ← current_cost
+                no_improve_counter ← 0
+            else:
+                no_improve_counter ← no_improve_counter + 1
+
+            iterations ← iterations + 1
+
+        if best_local_cost < best_global_cost:
+            best_global_solution ← best_local_solution
+            best_global_cost ← best_local_cost
+
+        restarts ← restarts + 1
+
+    return best_global_solution, best_global_cost
