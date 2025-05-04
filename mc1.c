@@ -174,15 +174,6 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
                     conflicts++;
                 }
             }
-            else if (constraint == 3)
-            {
-                // Xi / 3 != Xj / 3
-                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
-                {
-                    //printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
-                    conflicts++;
-                }
-            }
             else if (constraint == 2)
             {
                 // abs(Xi / 3 - Xj / 3) > 2
@@ -190,6 +181,15 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
                 if (diff < 2)
                 {
                     //printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
+                    conflicts++;
+                }
+            }
+            else if (constraint == 3)
+            {
+                // Xi / 3 != Xj / 3
+                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
+                {
+                    //printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
                     conflicts++;
                 }
             }

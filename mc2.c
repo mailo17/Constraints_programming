@@ -1,7 +1,7 @@
 // compile with: gcc -o output mc1.c  
 // run with: ./output
 // Results will be saved in results.txt
-// test.csv is a testing csv to see if everything works ok... i mean 5x5
+// test.csv is a testing csv to see if everything works ok... i mean 73x73
 // constraints.csv is the one that will be used in the algorithm and it is 72x72 as our courses...
 // We must implement it as Stergiou said
 // constraints types are (0,1,2,3,4)
@@ -22,7 +22,7 @@
 #include <string.h>
 
 // Functions signature
-void readConstraintsMatrix(const char *filename, int constraints[5][5]);
+void readConstraintsMatrix(const char *filename, int constraints[73][73]);
 int satisfies(int *Xvalue, int numberofvariables, int numberofvalues);
 int RandomVariableConflict(int *Xvalue, int numberofvariables, int numberofvalues);
 int AlternativeAssignment(int *Xvalue, int numberofvariables, int variable, int numberofvalues);
@@ -32,7 +32,7 @@ int main()
 {
     int maxTries = 1;
     int maxChanges = 10;
-    int numberofvariables = 5;
+    int numberofvariables = 73;
     int days = 10;
     int Xvalue[numberofvariables]; // X1, X2, ..., X70...values...Practically X1, X2, ..., X70
     int numberofvalues = days * 3; // Timeslots = days * 3
@@ -119,7 +119,7 @@ int main()
 }
 
 // Read from CSV file
-void readConstraintsMatrix(const char *filename, int constraints[5][5])
+void readConstraintsMatrix(const char *filename, int constraints[73][73])
 {
     FILE *file = fopen(filename, "r");
     if (file == NULL)
@@ -152,7 +152,7 @@ void readConstraintsMatrix(const char *filename, int constraints[5][5])
 int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
 {
     int conflicts = 0;
-    int constraints[5][5] = {0}; // Adjust size to 5x5
+    int constraints[73][73] = {0}; // Adjust size to 73x73
 
     // Read the matrix from the CSV 
     readConstraintsMatrix("test.csv", constraints);
@@ -160,36 +160,37 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
     // Check constraints...The four types of constraints we have 
     for (int i = 0; i < numberofvariables; i++)
     {
-        for (int j = 0; j < numberofvariables; j++)
+        for (int j = i+1; j < numberofvariables; j++)
         {
 
             int constraint = constraints[i][j];
+            //printf("Checking constraint between X%d and X%d: %d\n", i, j, constraint);
 
             if (constraint == 1)
             {
                 // Xi != Xj
                 if (Xvalue[i] == Xvalue[j])
                 {
-                    printf("Conflict: X%d == X%d\n", i, j);
+                    //printf("Conflict: X%d == X%d\n", i, j);
                     conflicts++;
                 }
             }
             else if (constraint == 2)
             {
-                // Xi / 3 != Xj / 3
-                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
+                // abs(Xi / 3 - Xj / 3) > 2
+                int diff = abs((Xvalue[i] / 3) - (Xvalue[j] / 3));
+                if (diff < 2)
                 {
-                    printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
+                    //printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
                     conflicts++;
                 }
             }
             else if (constraint == 3)
             {
-                // abs(Xi / 3 - Xj / 3) > 2
-                int diff = abs((Xvalue[i] / 3) - (Xvalue[j] / 3));
-                if (diff < 2)
+                // Xi / 3 != Xj / 3
+                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
                 {
-                    printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
+                    //printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
                     conflicts++;
                 }
             }
@@ -198,7 +199,7 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
                 // (Xi / 3 == Xj / 3 && Xi % 3 < Xj % 3)
                 if ((Xvalue[i] / 3 == Xvalue[j] / 3) && (Xvalue[i] % 3 >= Xvalue[j] % 3))
                 {
-                    printf("Conflict: X%d / 3 == X%d / 3 && X%d %% 3 >= X%d %% 3\n", i, j, i, j);
+                    //printf("Conflict: X%d / 3 == X%d / 3 && X%d %% 3 >= X%d %% 3\n", i, j, i, j);
                     conflicts++;
                 }
             }
