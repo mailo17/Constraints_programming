@@ -155,7 +155,7 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
     int constraints[73][73] = {0}; // Adjust size to 73x73
 
     // Read the matrix from the CSV 
-    readConstraintsMatrix("test.csv", constraints);
+    readConstraintsMatrix("BetterCSVview.csv", constraints);
 
     // Check constraints...The four types of constraints we have 
     for (int i = 0; i < numberofvariables; i++)
