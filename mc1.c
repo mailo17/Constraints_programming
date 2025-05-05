@@ -35,7 +35,7 @@ int main()
     int days = 20;
     int Xvalue[numberofvariables]; // X1, X2, ..., X70...values...Practically X1, X2, ..., X70
     int numberofvalues = days * 3; // Timeslots = days * 3
-    int PrecedureRestarts = 1; // The whole procedure restarts
+    int PrecedureRestarts = 5; // The whole procedure restarts
 
     FILE *outputFile = fopen("results.txt", "w"); // Open file to save results
     if (outputFile == NULL)
@@ -154,7 +154,7 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
     int constraints[73][73] = {0}; // Adjust size to 73x73
 
     // Read the matrix from the CSV 
-    readConstraintsMatrix("constraints.csv", constraints);
+    readConstraintsMatrix("BetterCSVview.csv", constraints);
 
     // Check constraints...The four types of constraints we have 
     for (int i = 0; i < numberofvariables; i++)
@@ -174,15 +174,6 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
                     conflicts++;
                 }
             }
-            else if (constraint == 3)
-            {
-                // Xi / 3 != Xj / 3
-                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
-                {
-                    //printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
-                    conflicts++;
-                }
-            }
             else if (constraint == 2)
             {
                 // abs(Xi / 3 - Xj / 3) > 2
@@ -190,6 +181,15 @@ int satisfies(int *Xvalue, int numberofvariables, int numberofvalues)
                 if (diff < 2)
                 {
                     //printf("Conflict: abs(X%d / 3 - X%d / 3) = %d <= 6\n", i, j, diff);
+                    conflicts++;
+                }
+            }
+            else if (constraint == 3)
+            {
+                // Xi / 3 != Xj / 3
+                if ((Xvalue[i] / 3) == (Xvalue[j] / 3))
+                {
+                    //printf("Conflict: X%d / 3 == X%d / 3\n", i, j);
                     conflicts++;
                 }
             }
